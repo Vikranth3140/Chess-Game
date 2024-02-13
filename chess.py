@@ -18,22 +18,13 @@ def loadImages():
 def initializeBoard():
     board = [['--' for _ in range(DIMENSION)] for _ in range(DIMENSION)]
     
-    board[0][0], board[7][0] = 'bR', 'wR'
-    board[0][1], board[7][1] = 'bN', 'wN'
-    board[0][2], board[7][2] = 'bB', 'wB'
-    board[0][3], board[7][3] = 'bQ', 'wQ'
-    board[0][4], board[7][4] = 'bK', 'wK'
-    board[0][5], board[7][5] = 'bB', 'wB'
-    board[0][6], board[7][6] = 'bN', 'wN'
-    board[0][7], board[7][7] = 'bR', 'wR'
-
-    # Now for the pawns
-    for col in range(8):
-        board[1][col] = 'bP'
-        board[6][col] = 'wP'
+    # Placing the pieces on the board according to the standard starting position
+    board[0] = ['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR']
+    board[1] = ['bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp']
+    board[6] = ['wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp']
+    board[7] = ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']
 
     return board
-
 
 # Initialize Pygame
 pygame.init()
@@ -231,13 +222,11 @@ def handleClick(x, y, board, squares):
     else:
         return None
 
-
 # Highlight the possible moves for a piece
 def highlightSquares(screen, moves, squares):
     for move in moves:
         row, col = move
         pygame.draw.rect(screen, (0, 255, 0), squares[row][col])
-
 
 # Draw the board and pieces
 def drawBoard(screen, board, squares, highlight):
@@ -263,23 +252,14 @@ def createBoardSquares(width, height, sq_size):
         squares.append(row_squares)
     return squares
 
-
 # Main game loop
 def main():
-    loadImages()
     squares = createBoardSquares(WIDTH, HEIGHT, SQ_SIZE)
     clock = pygame.time.Clock()
     running = True
     selectedPiece = None
     validMoves = []
-    board = [['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'],
-                ['bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp'],
-                ['--', '--', '--', '--', '--', '--', '--', '--'],
-                ['--', '--', '--', '--', '--', '--', '--', '--'],
-                ['--', '--', '--', '--', '--', '--', '--', '--'],
-                ['--', '--', '--', '--', '--', '--', '--', '--'],
-                ['wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp'],
-                ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']]
+    
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -289,11 +269,13 @@ def main():
                     x, y = pygame.mouse.get_pos()
                     selectedPiece = handleClick(x, y, board, squares)
                     if selectedPiece is not None:
+                        # Get valid moves for the selected piece
                         validMoves = getAllPossibleMoves(selectedPiece, board)
                 else:
                     x, y = pygame.mouse.get_pos()
                     row, col = x // SQ_SIZE, y // SQ_SIZE
                     if (row, col) in validMoves:
+                        # Move the selected piece to the clicked square
                         board[row][col] = selectedPiece
                         board[selectedPiece.position[0]][selectedPiece.position[1]] = '--'
                         selectedPiece.position = (row, col)
@@ -301,7 +283,6 @@ def main():
                     validMoves = []
         drawBoard(screen, board, squares, validMoves)
         clock.tick(MAX_FPS)
-
 
 if __name__ == "__main__":
     main()
