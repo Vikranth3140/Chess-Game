@@ -73,140 +73,116 @@ def getAllPossibleMoves(piece, board):
 def getPawnMoves(position, board):
     moves = []
     row, col = position
-    if board[row][col][0] == 'w':
-        if row-1 >= 0:
-            if board[row-1][col] == '--':
-                moves.append((row-1, col))
-            if col-1 >= 0 and board[row-1][col-1][0] == 'b':
-                moves.append((row-1, col-1))
-            if col+1 < DIMENSION and board[row-1][col+1][0] == 'b':
-                moves.append((row-1, col+1))
-            if row == 6 and board[row-2][col] == '--':
-                moves.append((row-2, col))
-    else:
-        if row+1 < DIMENSION:
-            if board[row+1][col] == '--':
-                moves.append((row+1, col))
-            if col-1 >= 0 and board[row+1][col-1][0] == 'w':
-                moves.append((row+1, col-1))
-            if col+1 < DIMENSION and board[row+1][col+1][0] == 'w':
-                moves.append((row+1, col+1))
-            if row == 1 and board[row+2][col] == '--':
-                moves.append((row+2, col))
+    piece_color = board[row][col][0]
+    direction = -1 if piece_color == 'w' else 1
+    
+    # Forward movement
+    if board[row + direction][col] == '--':
+        moves.append((row + direction, col))
+        # Double square move from starting position
+        if ((piece_color == 'w' and row == 6) or (piece_color == 'b' and row == 1)) and \
+                board[row + 2 * direction][col] == '--':
+            moves.append((row + 2 * direction, col))
+    
+    # Diagonal captures
+    for d in [-1, 1]:
+        if 0 <= col + d < DIMENSION:
+            if board[row + direction][col + d] != '--' and board[row + direction][col + d][0] != piece_color:
+                moves.append((row + direction, col + d))
+    
     return moves
-
 
 # Determine all possible squares a rook can move to
 def getRookMoves(position, board):
     moves = []
     row, col = position
-    # up
-    for i in range(row-1, -1, -1):
+    
+    # Horizontal moves
+    for i in range(row - 1, -1, -1):  # Up
         if board[i][col] == '--':
             moves.append((i, col))
         elif board[i][col][0] != board[row][col][0]:
             moves.append((i, col))
             break
-    # down
-    for i in range(row+1, DIMENSION):
+        else:
+            break
+    for i in range(row + 1, DIMENSION):  # Down
         if board[i][col] == '--':
             moves.append((i, col))
         elif board[i][col][0] != board[row][col][0]:
             moves.append((i, col))
             break
-    # left
-    for i in range(col-1, -1, -1):
+        else:
+            break
+    
+    # Vertical moves
+    for i in range(col - 1, -1, -1):  # Left
         if board[row][i] == '--':
             moves.append((row, i))
         elif board[row][i][0] != board[row][col][0]:
             moves.append((row, i))
             break
-    # right
-    for i in range(col+1, DIMENSION):
+        else:
+            break
+    for i in range(col + 1, DIMENSION):  # Right
         if board[row][i] == '--':
             moves.append((row, i))
         elif board[row][i][0] != board[row][col][0]:
             moves.append((row, i))
             break
+        else:
+            break
+    
     return moves
-
 
 # Determine all possible squares a knight can move to
 def getKnightMoves(position, board):
     moves = []
     row, col = position
-    for r in range(row-2, row+3):
-        for c in range(col-2, col+3):
-            if (r-row)**2 + (c-col)**2 == 5 and \
-                r >= 0 and r < DIMENSION and \
-                c >= 0 and c < DIMENSION:
-                if board[r][c] == '--':
-                    moves.append((r, c))
-                elif board[r][c][0] != board[row][col][0]:
-                    moves.append((r, c))
+    for r in range(row - 2, row + 3):
+        for c in range(col - 2, col + 3):
+            if abs(r - row) + abs(c - col) == 3 and \
+                    0 <= r < DIMENSION and 0 <= c < DIMENSION and \
+                    board[r][c][0] != board[row][col][0]:
+                moves.append((r, c))
     return moves
-
 
 # Determine all possible squares a bishop can move to
 def getBishopMoves(position, board):
     moves = []
     row, col = position
-    for i in range(1, DIMENSION):
-        # up-right
-        if row-i >= 0 and col+i < DIMENSION:
-            if board[row-i][col+i] == '--':
-                moves.append((row-i, col+i))
-            elif board[row-i][col+i][0] != board[row][col][0]:
-                moves.append((row-i, col+i))
+    
+    # Diagonal moves
+    directions = [(1, 1), (1, -1), (-1, 1), (-1, -1)]
+    for dr, dc in directions:
+        r, c = row + dr, col + dc
+        while 0 <= r < DIMENSION and 0 <= c < DIMENSION:
+            if board[r][c] == '--':
+                moves.append((r, c))
+            elif board[r][c][0] != board[row][col][0]:
+                moves.append((r, c))
                 break
-        # up-left
-        if row-i >= 0 and col-i >= 0:
-            if board[row-i][col-i] == '--':
-                moves.append((row-i, col-i))
-            elif board[row-i][col-i][0] != board[row][col][0]:
-                moves.append((row-i, col-i))
+            else:
                 break
-        # down-right
-        if row+i < DIMENSION and col+i < DIMENSION:
-            if board[row+i][col+i] == '--':
-                moves.append((row+i, col+i))
-            elif board[row+i][col+i][0] != board[row][col][0]:
-                moves.append((row+i, col+i))
-                break
-        # down-left
-        if row+i < DIMENSION and col-i >= 0:
-            if board[row+i][col-i] == '--':
-                moves.append((row+i, col-i))
-            elif board[row+i][col-i][0] != board[row][col][0]:
-                moves.append((row+i, col-i))
-                break
+            r += dr
+            c += dc
+    
     return moves
-
 
 # Determine all possible squares a queen can move to
 def getQueenMoves(position, board):
-    moves = []
-    row, col = position
-    moves.extend(getRookMoves(position, board))
-    moves.extend(getBishopMoves(position, board))
-    return moves
-
+    return getRookMoves(position, board) + getBishopMoves(position, board)
 
 # Determine all possible squares a king can move to
 def getKingMoves(position, board):
     moves = []
     row, col = position
-    for r in range(row-1, row+2):
-        for c in range(col-1, col+2):
-            if (r-row)**2 + (c-col)**2 <= 2 and \
-                r >= 0 and r < DIMENSION and \
-                c >= 0 and c < DIMENSION:
-                if board[r][c] == '--':
-                    moves.append((r, c))
-                elif board[r][c][0] != board[row][col][0]:
-                    moves.append((r, c))
+    for r in range(row - 1, row + 2):
+        for c in range(col - 1, col + 2):
+            if 0 <= r < DIMENSION and 0 <= c < DIMENSION and \
+                    (r != row or c != col) and board[r][c][0] != board[row][col][0]:
+                moves.append((r, c))
     return moves
-
 
 # Handle the user's clicks
 def handleClick(x, y, board, squares):
@@ -257,7 +233,7 @@ def main():
     squares = createBoardSquares(WIDTH, HEIGHT, SQ_SIZE)
     clock = pygame.time.Clock()
     running = True
-    selectedPiece = None
+    selectedPiecePosition = None
     validMoves = []
     
     while running:
@@ -265,22 +241,30 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if selectedPiece is None:
-                    x, y = pygame.mouse.get_pos()
-                    selectedPiece = handleClick(x, y, board, squares)
-                    if selectedPiece is not None:
-                        # Get valid moves for the selected piece
+                x, y = pygame.mouse.get_pos()
+                row, col = y // SQ_SIZE, x // SQ_SIZE
+                
+                # If no piece is selected, try to select one
+                if selectedPiecePosition is None:
+                    selectedPiecePosition = (row, col)
+                    selectedPiece = board[row][col]
+                    if selectedPiece != '--':
                         validMoves = getAllPossibleMoves(selectedPiece, board)
+                    else:
+                        selectedPiecePosition = None
+                        validMoves = []
                 else:
-                    x, y = pygame.mouse.get_pos()
-                    row, col = x // SQ_SIZE, y // SQ_SIZE
+                    # If a piece is already selected, try to move it
                     if (row, col) in validMoves:
                         # Move the selected piece to the clicked square
-                        board[row][col] = selectedPiece
-                        board[selectedPiece.position[0]][selectedPiece.position[1]] = '--'
-                        selectedPiece.position = (row, col)
-                    selectedPiece = None
-                    validMoves = []
+                        board[row][col] = board[selectedPiecePosition[0]][selectedPiecePosition[1]]
+                        board[selectedPiecePosition[0]][selectedPiecePosition[1]] = '--'
+                        selectedPiecePosition = None
+                        validMoves = []
+                    else:
+                        selectedPiecePosition = None
+                        validMoves = []
+                    
         drawBoard(screen, board, squares, validMoves)
         clock.tick(MAX_FPS)
 
