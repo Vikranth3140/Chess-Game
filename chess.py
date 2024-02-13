@@ -48,6 +48,36 @@ board = initializeBoard()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Chess Game")
 
+# Returns a list of all valid moves for a piece
+def getAllPossibleMoves(piece, board):
+    validMoves = []
+    row, col = None, None
+    
+    # Find the position of the piece on the board
+    for i in range(len(board)):
+        for j in range(len(board[i])):
+            if board[i][j] == piece:
+                row, col = i, j
+                break
+        if row is not None:
+            break
+    
+    # Determine valid moves based on the type of the piece
+    if piece[1] == 'P':  # Pawn
+        validMoves = getPawnMoves((row, col), board)
+    elif piece[1] == 'R':  # Rook
+        validMoves = getRookMoves((row, col), board)
+    elif piece[1] == 'N':  # Knight
+        validMoves = getKnightMoves((row, col), board)
+    elif piece[1] == 'B':  # Bishop
+        validMoves = getBishopMoves((row, col), board)
+    elif piece[1] == 'Q':  # Queen
+        validMoves = getQueenMoves((row, col), board)
+    elif piece[1] == 'K':  # King
+        validMoves = getKingMoves((row, col), board)
+    
+    return validMoves
+
 # Determine all possible squares a pawn can move to
 def getPawnMoves(position, board):
     moves = []
