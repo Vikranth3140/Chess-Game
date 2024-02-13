@@ -219,6 +219,17 @@ def drawBoard(screen, board, squares, highlight):
         highlightSquares(screen, highlight, squares)
     pygame.display.flip()
 
+# Create Board object
+def createBoardSquares(width, height, sq_size):
+    squares = []
+    for row in range(DIMENSION):
+        row_squares = []
+        for col in range(DIMENSION):
+            rect = pygame.Rect(col * sq_size, row * sq_size, sq_size, sq_size)
+            row_squares.append(rect)
+        squares.append(row_squares)
+    return squares
+
 
 # Main game loop
 def main():
