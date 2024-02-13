@@ -219,12 +219,15 @@ def getKingMoves(position, board):
 
 # Handle the user's clicks
 def handleClick(x, y, board, squares):
-    if (x//SQ_SIZE + y//SQ_SIZE) % 2 == 0:
-        square = (x//SQ_SIZE, y//SQ_SIZE)
-    else:
-        square = (x//SQ_SIZE + 1, y//SQ_SIZE)
-    if board[square[0]][square[1]] != '--':
-        return board[square[0]][square[1]]
+    if x < 0 or y < 0 or x >= WIDTH or y >= HEIGHT:
+        return None  # Click is outside of the board area
+    
+    # Convert pixel coordinates to board coordinates
+    row = y // SQ_SIZE
+    col = x // SQ_SIZE
+    
+    if board[row][col] != '--':
+        return board[row][col]
     else:
         return None
 
