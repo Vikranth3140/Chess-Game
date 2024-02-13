@@ -16,23 +16,24 @@ def loadImages():
 
 # Initialize the board
 def initializeBoard():
-    board = []
-    for i in range(DIMENSION):
-        row = []
-        for j in range(DIMENSION):
-            if i < 2:
-                row.append('bp' if (i+j) % 2 == 0 else '--')
-            elif i > 5:
-                row.append('wp' if (i+j) % 2 == 0 else '--')
-            else:
-                row.append('--')
-        board.append(row)
-    board[0][0], board[0][7], board[7][0], board[7][7] = 'bR', 'bR', 'wR', 'wR'
-    board[0][1], board[0][6], board[7][1], board[7][6] = 'bP', 'bP', 'wP', 'wP'
-    board[0][2], board[0][5], board[7][2], board[7][5] = 'bN', 'bN', 'wN', 'wN'
-    board[0][3], board[7][3] = 'bB', 'bQ', 'wB', 'wQ'
-    board[0][4], board[7][4] = 'bQ', 'bK', 'wK', 'wQ'
+    board = [['--' for _ in range(DIMENSION)] for _ in range(DIMENSION)]
+    
+    board[0][0], board[7][0] = 'bR', 'wR'
+    board[0][1], board[7][1] = 'bN', 'wN'
+    board[0][2], board[7][2] = 'bB', 'wB'
+    board[0][3], board[7][3] = 'bQ', 'wQ'
+    board[0][4], board[7][4] = 'bK', 'wK'
+    board[0][5], board[7][5] = 'bB', 'wB'
+    board[0][6], board[7][6] = 'bN', 'wN'
+    board[0][7], board[7][7] = 'bR', 'wR'
+
+    # Now for the pawns
+    for col in range(8):
+        board[1][col] = 'bP'
+        board[6][col] = 'wP'
+
     return board
+
 
 # Initialize Pygame
 pygame.init()
